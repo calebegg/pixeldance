@@ -1,0 +1,8 @@
+{
+  "clang-format.executable": "${workspaceRoot}/node_modules/.bin/clang-format",
+  "clang-format.fallbackStyle": "Google",
+  "[glsl]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

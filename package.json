@@ -1,0 +1,27 @@
+{
+  "name": "pixel.dance",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^13.9.0",
+    "@types/react": "^16.9.23",
+    "@types/react-dom": "^16.9.5",
+    "clang-format": "^1.4.0",
+    "parcel": "^2.0.0-alpha.3.2",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  }
+}
