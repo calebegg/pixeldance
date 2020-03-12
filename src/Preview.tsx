@@ -8,14 +8,27 @@ const H = 500;
 
 const SCALE = 5;
 
-const CONFIG = {
+interface State {
+  name: string;
+  color: string;
+}
+
+type Block = readonly [readonly [string, string], readonly [string, string]];
+
+interface Rule {
+  before: Block;
+  after: Array<{ probability?: number; result: Block }>;
+  symmetry?: 'horizontal';
+}
+
+const CONFIG: { states: State[]; rules: Rule[] } = {
   states: [
     { name: 'air', color: '0.0, 0.981, 1.0' },
     { name: 'sand', color: '1.0, 0.821, 0.122' },
     { name: 'wall', color: '0.0, 0.0, 0.0' },
     { name: 'water', color: '0.0, 0.0, 1.0' },
     { name: 'dune-buggy-right', color: '1.0, 0.0, 1.0' },
-    { name: 'dune-buggy-left', color: '0.0, 1.0, 1.0' },
+    { name: 'dune-buggy-left', color: '1.0, 0.0, 1.0' },
   ],
   rules: [
     {
@@ -25,7 +38,6 @@ const CONFIG = {
       ],
       after: [
         {
-          probability: 1.0,
           result: [
             ['air', '*'],
             ['sand', '*'],
@@ -40,25 +52,216 @@ const CONFIG = {
       ],
       after: [
         {
-          probability: 1.0,
           result: [
             ['air', 'air'],
             ['sand', 'sand'],
           ],
         },
       ],
+      symmetry: 'horizontal',
     },
     {
       before: [
-        ['air', 'sand'],
-        ['air', 'sand'],
+        ['water', '*'],
+        ['air', '*'],
       ],
       after: [
         {
-          probability: 1.0,
+          result: [
+            ['air', '*'],
+            ['water', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['water', 'air'],
+        ['water', 'air'],
+      ],
+      after: [
+        {
           result: [
             ['air', 'air'],
-            ['sand', 'sand'],
+            ['water', 'water'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['air', 'water'],
+        ['air', 'water'],
+      ],
+      after: [
+        {
+          result: [
+            ['air', 'air'],
+            ['water', 'water'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['air', 'water'],
+        ['*', '^air'],
+      ],
+      after: [
+        {
+          probability: 0.75,
+          result: [
+            ['water', 'air'],
+            ['*', '*'],
+          ],
+        },
+      ],
+      symmetry: 'horizontal',
+    },
+    {
+      before: [
+        ['dune-buggy-right', '*'],
+        ['air', '*'],
+      ],
+      after: [
+        {
+          result: [
+            ['air', '*'],
+            ['dune-buggy-right', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['dune-buggy-right', 'air'],
+        ['^air', '^air'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['air', 'dune-buggy-right'],
+            ['*', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['dune-buggy-right', 'air'],
+        ['^air', 'air'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['air', 'air'],
+            ['*', 'dune-buggy-right'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['air', 'air'],
+        ['dune-buggy-right', '^air'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['air', 'dune-buggy-right'],
+            ['air', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['*', '^air'],
+        ['dune-buggy-right', '^air'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['*', '*'],
+            ['dune-buggy-left', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['dune-buggy-left', '*'],
+        ['air', '*'],
+      ],
+      after: [
+        {
+          result: [
+            ['air', '*'],
+            ['dune-buggy-left', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['air', 'dune-buggy-left'],
+        ['^air', '^air'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['dune-buggy-left', 'air'],
+            ['*', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['air', 'dune-buggy-left'],
+        ['air', '^air'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['air', 'air'],
+            ['dune-buggy-left', '*'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['air', 'air'],
+        ['^air', 'dune-buggy-left'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['dune-buggy-left', 'air'],
+            ['*', 'air'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['^air', '*'],
+        ['^air', 'dune-buggy-left'],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            ['*', '*'],
+            ['*', 'dune-buggy-right'],
           ],
         },
       ],
@@ -116,83 +319,118 @@ export function Preview() {
         float x = gl_FragCoord.x;
         float y = RESOLUTION.y - gl_FragCoord.y;
 
-        if (x == OFFSET.x + 0.5 && y == OFFSET.y + 0.5) {
-          gl_FragColor = encode(-1);
-          return;
-        }
-
         gl_FragColor = encode(at(x, y));
 
-        // Bottom wall
-        if (y == RESOLUTION.y - 0.5) {
+        // Walls
+        if (y == RESOLUTION.y - 0.5 || x == RESOLUTION.x - 0.5 || x == 0.5) {
           gl_FragColor = encode(2);
           return;
         }
         // Sand source
-        if (y == 1.5 && rand(vec2(x, y)) > .99) {
+        if (FRAME < 400.0 && y == 1.5 && rand(vec2(x, y)) > .99) {
           gl_FragColor = encode(1);
         }
 
+        if (FRAME == 401.0 && y == 1.5 && x == 1.5) {
+          gl_FragColor = encode(4);
+        }
+
         // Intermediate walls
-        if (y == 80.5 && mod(x + 3.0, 23.0) <= 20.5) {
-          gl_FragColor = encode(2);
-        }
+        // if (y == 80.5 && mod(x + 3.0, 23.0) <= 20.5) {
+        //   gl_FragColor = encode(2);
+        // }
 
-        if (y == 140.5 && mod(x + 19.0, 32.0) <= 23.5) {
-          gl_FragColor = encode(2);
-        }
+        // if (y == 140.5 && mod(x + 19.0, 32.0) <= 23.5) {
+        //   gl_FragColor = encode(2);
+        // }
 
-        if (y == 210.5 && mod(x + 7.0, 62.0) <= 53.5) {
-          gl_FragColor = encode(2);
-        }
+        // if (y == 210.5 && mod(x + 7.0, 62.0) <= 53.5) {
+        //   gl_FragColor = encode(2);
+        // }
 
         vec2 ul;
         ul.x = x - mod(x + OFFSET.x, 2.0) + 0.5;
         ul.y = y - mod(y + OFFSET.y, 2.0) + 0.5;
 
-        ${CONFIG.rules
-          .map(
-            r => `
-          if (${r.before
-            .flatMap((row, dy) =>
-              row.map((s, dx) =>
-                s === '*'
-                  ? 'true'
-                  : `at(ul.x + ${dx}.0, ul.y + ${dy}.0) == ${INDICES.get(s)}`,
-              ),
-            )
-            .join(' && ')}) {
-              ${r.after
-                .map(
-                  a =>
-                    `
-                    if (rand(ul) < float(${a.probability})) {${a.result
-                      .flatMap((row, dy) =>
-                        row.map((s, dx) =>
-                          s === '*'
-                            ? ''
-                            : `
-                              if (x == ul.x + ${dx}.0 && y == ul.y + ${dy}.0) {
-                                gl_FragColor = encode(${INDICES.get(s)});
-                              }
-                              `,
-                        ),
-                      )
-                      .filter(term => !!term)
-                      .join('else')}
-                  return;
-                }`,
-                )
-                .join('\n')}
-          }
-        `,
-          )
-          .join('')}
+        ${CONFIG.rules.map(createRule).join('')}
       }
       `,
     );
   });
   return <canvas width={W} height={H} ref={canvas}></canvas>;
+}
+
+function createRule(r: Rule): string {
+  if (r.symmetry === 'horizontal') {
+    return (
+      createRule({ ...r, symmetry: undefined }) +
+      createRule({
+        before: [
+          [r.before[0][1], r.before[0][0]],
+          [r.before[1][1], r.before[1][0]],
+        ],
+        after: r.after.map(a => ({
+          ...a,
+          result: [
+            [a.result[0][1], a.result[0][0]],
+            [a.result[1][1], a.result[1][0]],
+          ],
+        })),
+      })
+    );
+  }
+  return `
+  if (${createBeforeCondition(r.before)}) {
+      ${r.after
+        .map(
+          a =>
+            `
+            if (${
+              a.probability == null
+                ? 'true'
+                : `rand(ul) < float(${a.probability})`
+            }) {${createAfterResult(a.result)}
+          return;
+        }`,
+        )
+        .join('\n')}
+  }
+`;
+}
+
+function createBeforeCondition(before: Block) {
+  return before
+    .flatMap((row, dy) =>
+      row.map((s, dx) => {
+        if (s === '*') {
+          return 'true';
+        } else if (s.startsWith('^')) {
+          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) != ${INDICES.get(
+            s.substring(1),
+          )}`;
+        } else {
+          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) == ${INDICES.get(s)}`;
+        }
+      }),
+    )
+    .join(' && ');
+}
+
+function createAfterResult(result: Block) {
+  return result
+    .flatMap((row, dy) =>
+      row.map((s, dx) =>
+        s === '*'
+          ? ''
+          : `
+            if (x == ul.x + ${dx}.0 && y == ul.y + ${dy}.0) {
+              gl_FragColor = encode(${INDICES.get(s)});
+            }
+            `,
+      ),
+    )
+    .filter(term => !!term)
+    .join('else');
 }
 
 function installShaders(
