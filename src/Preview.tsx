@@ -33,6 +33,36 @@ const CONFIG = {
         },
       ],
     },
+    {
+      before: [
+        ['sand', 'air'],
+        ['sand', 'air'],
+      ],
+      after: [
+        {
+          probability: 1.0,
+          result: [
+            ['air', 'air'],
+            ['sand', 'sand'],
+          ],
+        },
+      ],
+    },
+    {
+      before: [
+        ['air', 'sand'],
+        ['air', 'sand'],
+      ],
+      after: [
+        {
+          probability: 1.0,
+          result: [
+            ['air', 'air'],
+            ['sand', 'sand'],
+          ],
+        },
+      ],
+    },
   ],
 };
 
@@ -132,21 +162,28 @@ export function Preview() {
               ),
             )
             .join(' && ')}) {
-              ${r.after[0].result
-                .flatMap((row, dy) =>
-                  row.map((s, dx) =>
-                    s === '*'
-                      ? ''
-                      : `
-              if (x == ul.x + ${dx}.0 && y == ul.y + ${dy}.0) {
-                gl_FragColor = encode(${INDICES.get(s)});
-              }
-              `,
-                  ),
+              ${r.after
+                .map(
+                  a =>
+                    `
+                    if (rand(ul) < float(${a.probability})) {${a.result
+                      .flatMap((row, dy) =>
+                        row.map((s, dx) =>
+                          s === '*'
+                            ? ''
+                            : `
+                              if (x == ul.x + ${dx}.0 && y == ul.y + ${dy}.0) {
+                                gl_FragColor = encode(${INDICES.get(s)});
+                              }
+                              `,
+                        ),
+                      )
+                      .filter(term => !!term)
+                      .join('else')}
+                  return;
+                }`,
                 )
-                .filter(term => !!term)
-                .join('else')}
-            return;
+                .join('\n')}
           }
         `,
           )
