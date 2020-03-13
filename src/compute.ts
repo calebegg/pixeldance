@@ -1,4 +1,4 @@
-import { Rule, Block, Config } from './types';
+import { Rule, Block, Automaton } from './types';
 
 const HEADER = `
 precision mediump float;
@@ -56,9 +56,12 @@ void main() {
   ul.y = y - mod(y + OFFSET.y, 2.0) + 0.5;
 `;
 
-export function computeShader(config: Config, indices: Map<string, number>) {
+export function computeShader(
+  automaton: Automaton,
+  indices: Map<string, number>,
+) {
   return `${HEADER}
-    ${config.rules.map(r => createRule(r, indices)).join('')}
+    ${automaton.rules.map(r => createRule(r, indices)).join('')}
   }
   `;
 }
