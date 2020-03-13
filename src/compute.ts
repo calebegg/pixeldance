@@ -30,12 +30,15 @@ void main() {
     return;
   }
   // Sand source
-  if (FRAME < 400.0 && y == 1.5 && rand(vec2(x, y)) > .99) {
+  if (FRAME < 200.0 && y == 1.5 && rand(vec2(x, y)) > .92) {
     gl_FragColor = encode(1);
   }
 
-  if (FRAME == 401.0 && y == 1.5 && x == 1.5) {
+  if (FRAME == 201.0 && y == 1.5 && x == 1.5) {
     gl_FragColor = encode(4);
+  }
+  if (FRAME == 201.0 && y == 1.5 && x == RESOLUTION.x - 1.5) {
+    gl_FragColor = encode(5);
   }
 
   // Intermediate walls

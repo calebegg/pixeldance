@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { computeShader } from './compute';
 
-const W = 500;
-const H = 500;
+const W = window.innerWidth;
+const H = window.innerHeight;
 
 import { DEFAULT_CONFIG as CONFIG } from './defaultConfig';
 import { installShaders, run } from './webgl';

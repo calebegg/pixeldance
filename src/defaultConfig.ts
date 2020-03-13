@@ -111,6 +111,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
+      symmetry: 'horizontal',
     },
     {
       before: [
@@ -119,7 +120,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['air', 'dune-buggy-right'],
             ['*', '*'],
@@ -134,7 +134,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['air', 'air'],
             ['*', 'dune-buggy-right'],
@@ -149,7 +148,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['air', 'dune-buggy-right'],
             ['air', '*'],
@@ -164,7 +162,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['*', '*'],
             ['dune-buggy-left', '*'],
@@ -185,6 +182,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
+      symmetry: 'horizontal',
     },
     {
       before: [
@@ -193,7 +191,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['dune-buggy-left', 'air'],
             ['*', '*'],
@@ -208,7 +205,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['air', 'air'],
             ['dune-buggy-left', '*'],
@@ -223,7 +219,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['dune-buggy-left', 'air'],
             ['*', 'air'],
@@ -238,7 +233,6 @@ export const DEFAULT_CONFIG: Automaton = {
       ],
       after: [
         {
-          probability: 0.25,
           result: [
             ['*', '*'],
             ['*', 'dune-buggy-right'],

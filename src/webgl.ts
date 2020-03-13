@@ -9,8 +9,6 @@ const offsets = (function*() {
   }
 })();
 
-let frame = 0;
-
 let computeProgram: WebGLProgram;
 let renderProgram: WebGLProgram;
 
@@ -20,10 +18,12 @@ let output: BufferData;
 /** Start the animation, updating the cell states and rendering every frame. */
 export function run(gl: WebGLRenderingContext) {
   let timerId = -1;
+  let frame = 0;
 
   function renderAndContinue() {
-    for (let i = 0; i < 1; i++) update(gl);
-    render(gl);
+    frame++;
+    if (frame % 2 == 0) update(gl, frame / 2);
+    else render(gl);
     timerId = requestAnimationFrame(renderAndContinue);
   }
 
@@ -35,8 +35,7 @@ export function run(gl: WebGLRenderingContext) {
 }
 
 /** Run the compute shader to update the state of each cell. */
-function update(gl: WebGLRenderingContext) {
-  frame++;
+function update(gl: WebGLRenderingContext, frame: number) {
   // Compute next step
   gl.useProgram(computeProgram);
   gl.bindFramebuffer(gl.FRAMEBUFFER, output.buffer);
@@ -100,8 +99,8 @@ export function installShaders(
   gl.useProgram(computeProgram);
   gl.uniform2f(
     gl.getUniformLocation(computeProgram, 'RESOLUTION'),
-    width / SCALE,
-    height / SCALE,
+    Math.floor(width / SCALE),
+    Math.floor(height / SCALE),
   );
 }
 
@@ -160,8 +159,8 @@ function createBuffer(
     gl.TEXTURE_2D,
     0,
     gl.RGBA,
-    width / SCALE,
-    height / SCALE,
+    Math.floor(width / SCALE),
+    Math.floor(height / SCALE),
     0,
     gl.RGBA,
     gl.FLOAT,
