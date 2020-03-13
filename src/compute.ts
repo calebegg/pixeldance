@@ -61,6 +61,7 @@ export function computeShader(
   indices: Map<string, number>,
 ) {
   return `${HEADER}
+    float threshold = rand(ul);
     ${automaton.rules.map(r => createRule(r, indices)).join('')}
   }
   `;
@@ -88,19 +89,23 @@ function createRule(r: Rule, indices: Map<string, number>): string {
       )
     );
   }
+  let probSum = 0;
   return `
   if (${createBeforeCondition(r.before, indices)}) {
       ${r.after
-        .map(a => {
+        .map((a, i) => {
           const body = `${createAfterResult(a.result, indices)} return;`;
+          if (a.probability != null) {
+            probSum += a.probability;
+          }
           return `
             if (${
               a.probability == null
                 ? 'true'
-                : `rand(ul) < float(${a.probability})`
+                : `threshold < ${probSum.toFixed(3)}`
             }) {${body}}`;
         })
-        .join('\n')}
+        .join(' else ')}
   }
 `;
 }
@@ -138,5 +143,5 @@ function createAfterResult(result: Block, indices: Map<string, number>) {
       ),
     )
     .filter(term => !!term)
-    .join('else');
+    .join(' else ');
 }
