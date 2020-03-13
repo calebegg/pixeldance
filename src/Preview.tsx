@@ -11,6 +11,7 @@ const INDICES = new Map(CONFIG.states.map((s, i) => [s.name, i] as const));
 
 export function Preview() {
   const canvas = useRef<HTMLCanvasElement>(null);
+  const mouse = { x: -1, y: -1, clicked: false };
   useEffect(() => {
     if (!canvas.current) return;
     const renderSrc = `precision mediump float;
@@ -40,8 +41,21 @@ export function Preview() {
       W,
       H,
     );
-
-    return run(gl);
-  });
-  return <canvas width={W} height={H} ref={canvas}></canvas>;
+    return run(gl, mouse);
+  }, []);
+  return (
+    <canvas
+      onMouseDown={e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        mouse.clicked = true;
+      }}
+      onMouseUp={() => {
+        mouse.clicked = false;
+      }}
+      width={W}
+      height={H}
+      ref={canvas}
+    ></canvas>
+  );
 }

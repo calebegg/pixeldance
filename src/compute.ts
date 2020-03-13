@@ -6,6 +6,7 @@ precision mediump float;
 uniform vec2 RESOLUTION;
 uniform sampler2D DATA;
 uniform vec2 OFFSET;
+uniform vec2 CLICK;
 uniform float FRAME;
 
 // From https://thebookofshaders.com/10/
@@ -23,6 +24,11 @@ void main() {
   float y = RESOLUTION.y - gl_FragCoord.y;
 
   gl_FragColor = encode(at(x, y));
+
+  if (x == CLICK.x + 0.5 && y == CLICK.y + 0.5) {
+    gl_FragColor = encode(3);
+    return;
+  }
 
   // Walls
   if (y == RESOLUTION.y - 0.5 || x == RESOLUTION.x - 0.5 || x == 0.5) {

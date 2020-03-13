@@ -53,6 +53,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
+      symmetry: 'horizontal',
     },
     {
       before: [

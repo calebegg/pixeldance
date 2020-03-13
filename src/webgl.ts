@@ -15,14 +15,20 @@ let renderProgram: WebGLProgram;
 let input: BufferData;
 let output: BufferData;
 
+export interface MouseData {
+  x: number;
+  y: number;
+  clicked: boolean;
+}
+
 /** Start the animation, updating the cell states and rendering every frame. */
-export function run(gl: WebGLRenderingContext) {
+export function run(gl: WebGLRenderingContext, mouse: MouseData) {
   let timerId = -1;
   let frame = 0;
 
   function renderAndContinue() {
     frame++;
-    if (frame % 2 == 0) update(gl, frame / 2);
+    if (frame % 2 == 0) update(gl, frame / 2, mouse);
     else render(gl);
     timerId = requestAnimationFrame(renderAndContinue);
   }
@@ -35,7 +41,7 @@ export function run(gl: WebGLRenderingContext) {
 }
 
 /** Run the compute shader to update the state of each cell. */
-function update(gl: WebGLRenderingContext, frame: number) {
+function update(gl: WebGLRenderingContext, frame: number, mouse: MouseData) {
   // Compute next step
   gl.useProgram(computeProgram);
   gl.bindFramebuffer(gl.FRAMEBUFFER, output.buffer);
@@ -44,6 +50,12 @@ function update(gl: WebGLRenderingContext, frame: number) {
   gl.uniform2fv(
     gl.getUniformLocation(computeProgram, 'OFFSET'),
     offsets.next().value,
+  );
+  gl.uniform2fv(
+    gl.getUniformLocation(computeProgram, 'CLICK'),
+    mouse.clicked
+      ? [Math.floor(mouse.x / SCALE), Math.floor(mouse.y / SCALE)]
+      : [-1, -1],
   );
   gl.framebufferTexture2D(
     gl.FRAMEBUFFER,
