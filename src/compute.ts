@@ -11,12 +11,16 @@ uniform float FRAME;
 // From https://thebookofshaders.com/10/
 float rand(vec2 co) {
   return fract(sin(dot(co.xy, vec2(12.9898, 78.233)) + mod(FRAME, 144.92747)) *
-              43758.5453);
+               43758.5453);
 }
 vec4 encode(int val) { return vec4(float(val), 0.0, 0.0, 1.0); }
 int at(float x, float y) {
   return int(texture2D(DATA, vec2(x, RESOLUTION.y - y) / RESOLUTION).r);
 }
+
+vec4 eq(int x, int y) { return 1.0 - vec4(abs(sign(float(x) - float(y)))); }
+vec4 eq(float x, float y) { return 1.0 - vec4(abs(sign(x - y))); }
+vec4 eq(vec4 x, vec4 y) { return 1.0 - abs(sign(x - y)); }
 
 void main() {
   float x = gl_FragCoord.x;
@@ -38,22 +42,20 @@ void main() {
     gl_FragColor = encode(4);
   }
 
-  // Intermediate walls
-  // if (y == 80.5 && mod(x + 3.0, 23.0) <= 20.5) {
-  //   gl_FragColor = encode(2);
-  // }
-
-  // if (y == 140.5 && mod(x + 19.0, 32.0) <= 23.5) {
-  //   gl_FragColor = encode(2);
-  // }
-
-  // if (y == 210.5 && mod(x + 7.0, 62.0) <= 53.5) {
-  //   gl_FragColor = encode(2);
-  // }
-
   vec2 ul;
   ul.x = x - mod(x + OFFSET.x, 2.0) + 0.5;
   ul.y = y - mod(y + OFFSET.y, 2.0) + 0.5;
+
+  float threshold = rand(ul);
+
+  vec4 UNSET = vec4(0);
+  vec4 color = UNSET;
+`;
+
+const FOOTER = `
+if (color != UNSET) {
+  gl_FragColor = color;
+}
 `;
 
 export function computeShader(
@@ -61,8 +63,8 @@ export function computeShader(
   indices: Map<string, number>,
 ) {
   return `${HEADER}
-    float threshold = rand(ul);
     ${automaton.rules.map(r => createRule(r, indices)).join('')}
+    ${FOOTER}
   }
   `;
 }
@@ -89,24 +91,12 @@ function createRule(r: Rule, indices: Map<string, number>): string {
       )
     );
   }
-  let probSum = 0;
   return `
-  if (${createBeforeCondition(r.before, indices)}) {
-      ${r.after
-        .map((a, i) => {
-          const body = `${createAfterResult(a.result, indices)} return;`;
-          if (a.probability != null) {
-            probSum += a.probability;
-          }
-          return `
-            if (${
-              a.probability == null
-                ? 'true'
-                : `threshold < ${probSum.toFixed(3)}`
-            }) {${body}}`;
-        })
-        .join(' else ')}
-  }
+  color += eq(color, UNSET) *
+    ${createBeforeCondition(r.before, indices)}
+    * (
+      ${r.after.map((a, i) => createAfterResult(a.result, indices)).join(' + ')}
+    );
 `;
 }
 
@@ -117,16 +107,16 @@ function createBeforeCondition(before: Block, indices: Map<string, number>) {
         if (s === '*') {
           return null;
         } else if (s.startsWith('^')) {
-          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) != ${indices.get(
+          return `(1.0 - eq(at(ul.x + ${dx}.0, ul.y + ${dy}.0), ${indices.get(
             s.substring(1),
-          )}`;
+          )})`;
         } else {
-          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) == ${indices.get(s)}`;
+          return `eq(at(ul.x + ${dx}.0, ul.y + ${dy}.0), ${indices.get(s)})`;
         }
       }),
     )
     .filter(v => !!v)
-    .join(' && ');
+    .join(' * ');
 }
 
 function createAfterResult(result: Block, indices: Map<string, number>) {
@@ -136,12 +126,12 @@ function createAfterResult(result: Block, indices: Map<string, number>) {
         s === '*'
           ? ''
           : `
-            if (x == ul.x + ${dx}.0 && y == ul.y + ${dy}.0) {
-              gl_FragColor = encode(${indices.get(s)});
-            }
+            eq(x, ul.x + ${dx}.0) *
+            eq(y, ul.y + ${dy}.0) *
+            encode(${indices.get(s)})
             `,
       ),
     )
     .filter(term => !!term)
-    .join(' else ');
+    .join(' + ');
 }
