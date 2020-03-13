@@ -1,27 +1,13 @@
 import React, { useRef, useEffect } from 'react';
-
-import { readFileSync } from 'fs';
-import { render } from 'react-dom';
+import { State, Rule, Config } from './types';
+import { computeShader } from './compute';
 
 const W = 500;
 const H = 500;
 
 const SCALE = 5;
 
-interface State {
-  name: string;
-  color: string;
-}
-
-type Block = readonly [readonly [string, string], readonly [string, string]];
-
-interface Rule {
-  before: Block;
-  after: Array<{ probability?: number; result: Block }>;
-  symmetry?: 'horizontal';
-}
-
-const CONFIG: { states: State[]; rules: Rule[] } = {
+const CONFIG: Config = {
   states: [
     { name: 'air', color: '0.0, 0.981, 1.0' },
     { name: 'sand', color: '1.0, 0.821, 0.122' },
@@ -297,140 +283,10 @@ export function Preview() {
       gl,
       renderSrc,
       //readFileSync(__dirname + '/compute.glsl', 'utf-8'),
-      `
-      precision mediump float;
-
-      uniform vec2 RESOLUTION;
-      uniform sampler2D DATA;
-      uniform vec2 OFFSET;
-      uniform float FRAME;
-
-      // From https://thebookofshaders.com/10/
-      float rand(vec2 co) {
-        return fract(sin(dot(co.xy, vec2(12.9898, 78.233)) + mod(FRAME, 144.92747)) *
-                    43758.5453);
-      }
-      vec4 encode(int val) { return vec4(float(val), 0.0, 0.0, 1.0); }
-      int at(float x, float y) {
-        return int(texture2D(DATA, vec2(x, RESOLUTION.y - y) / RESOLUTION).r);
-      }
-
-      void main() {
-        float x = gl_FragCoord.x;
-        float y = RESOLUTION.y - gl_FragCoord.y;
-
-        gl_FragColor = encode(at(x, y));
-
-        // Walls
-        if (y == RESOLUTION.y - 0.5 || x == RESOLUTION.x - 0.5 || x == 0.5) {
-          gl_FragColor = encode(2);
-          return;
-        }
-        // Sand source
-        if (FRAME < 400.0 && y == 1.5 && rand(vec2(x, y)) > .99) {
-          gl_FragColor = encode(1);
-        }
-
-        if (FRAME == 401.0 && y == 1.5 && x == 1.5) {
-          gl_FragColor = encode(4);
-        }
-
-        // Intermediate walls
-        // if (y == 80.5 && mod(x + 3.0, 23.0) <= 20.5) {
-        //   gl_FragColor = encode(2);
-        // }
-
-        // if (y == 140.5 && mod(x + 19.0, 32.0) <= 23.5) {
-        //   gl_FragColor = encode(2);
-        // }
-
-        // if (y == 210.5 && mod(x + 7.0, 62.0) <= 53.5) {
-        //   gl_FragColor = encode(2);
-        // }
-
-        vec2 ul;
-        ul.x = x - mod(x + OFFSET.x, 2.0) + 0.5;
-        ul.y = y - mod(y + OFFSET.y, 2.0) + 0.5;
-
-        ${CONFIG.rules.map(createRule).join('')}
-      }
-      `,
+      computeShader(CONFIG, INDICES),
     );
   });
   return <canvas width={W} height={H} ref={canvas}></canvas>;
-}
-
-function createRule(r: Rule): string {
-  if (r.symmetry === 'horizontal') {
-    return (
-      createRule({ ...r, symmetry: undefined }) +
-      createRule({
-        before: [
-          [r.before[0][1], r.before[0][0]],
-          [r.before[1][1], r.before[1][0]],
-        ],
-        after: r.after.map(a => ({
-          ...a,
-          result: [
-            [a.result[0][1], a.result[0][0]],
-            [a.result[1][1], a.result[1][0]],
-          ],
-        })),
-      })
-    );
-  }
-  return `
-  if (${createBeforeCondition(r.before)}) {
-      ${r.after
-        .map(
-          a =>
-            `
-            if (${
-              a.probability == null
-                ? 'true'
-                : `rand(ul) < float(${a.probability})`
-            }) {${createAfterResult(a.result)}
-          return;
-        }`,
-        )
-        .join('\n')}
-  }
-`;
-}
-
-function createBeforeCondition(before: Block) {
-  return before
-    .flatMap((row, dy) =>
-      row.map((s, dx) => {
-        if (s === '*') {
-          return 'true';
-        } else if (s.startsWith('^')) {
-          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) != ${INDICES.get(
-            s.substring(1),
-          )}`;
-        } else {
-          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) == ${INDICES.get(s)}`;
-        }
-      }),
-    )
-    .join(' && ');
-}
-
-function createAfterResult(result: Block) {
-  return result
-    .flatMap((row, dy) =>
-      row.map((s, dx) =>
-        s === '*'
-          ? ''
-          : `
-            if (x == ul.x + ${dx}.0 && y == ul.y + ${dy}.0) {
-              gl_FragColor = encode(${INDICES.get(s)});
-            }
-            `,
-      ),
-    )
-    .filter(term => !!term)
-    .join('else');
 }
 
 function installShaders(
