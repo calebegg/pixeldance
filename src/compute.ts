@@ -9,11 +9,17 @@ uniform vec2 OFFSET;
 uniform vec2 CLICK;
 uniform float FRAME;
 
-// From https://thebookofshaders.com/10/
-float rand(vec2 co) {
-  return fract(sin(dot(co.xy, vec2(12.9898, 78.233)) + mod(FRAME, 144.92747)) *
-              43758.5453);
+// Modified from http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+highp float rand(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(vec2(co.x - FRAME, co.y + FRAME) ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
 }
+
 vec4 encode(int val) { return vec4(float(val), 0.0, 0.0, 1.0); }
 int at(float x, float y) {
   return int(texture2D(DATA, vec2(x, RESOLUTION.y - y) / RESOLUTION).r);

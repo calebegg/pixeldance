@@ -5,6 +5,11 @@ canvas {
   z-index: -1000;
 }
 
+main {
+  /* Only to allow clicks on the canvas to go through when the editor is open. */
+  position: absolute;
+}
+
 details {
   background: rgba(0, 0, 0, 0.5);
   padding: 8px;
