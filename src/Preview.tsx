@@ -63,6 +63,13 @@ export function Preview({ automaton }: { automaton: Automaton }) {
       onMouseUp={() => {
         mouse.clicked = false;
       }}
+      onMouseMove={e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      }}
+      onMouseLeave={() => {
+        mouse.clicked = false;
+      }}
       width={dimensions[0]}
       height={dimensions[1]}
       ref={canvas}
