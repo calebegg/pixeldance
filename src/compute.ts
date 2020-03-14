@@ -65,45 +65,39 @@ void main() {
   ul.y = y - mod(y + OFFSET.y, 2.0) + 0.5;
 `;
 
-export function computeShader(
-  automaton: Automaton,
-  indices: Map<string, number>,
-) {
+export function computeShader(automaton: Automaton) {
   return `${HEADER}
     float threshold = rand(ul);
-    ${automaton.rules.map(r => createRule(r, indices)).join('')}
+    ${automaton.rules.map(r => createRule(r)).join('')}
   }
   `;
 }
 
-function createRule(r: Rule, indices: Map<string, number>): string {
+function createRule(r: Rule): string {
   if (r.symmetry === 'horizontal') {
     return (
-      createRule({ ...r, symmetry: undefined }, indices) +
-      createRule(
-        {
-          before: [
-            [r.before[0][1], r.before[0][0]],
-            [r.before[1][1], r.before[1][0]],
+      createRule({ ...r, symmetry: undefined }) +
+      createRule({
+        before: [
+          [r.before[0][1], r.before[0][0]],
+          [r.before[1][1], r.before[1][0]],
+        ],
+        after: r.after.map(a => ({
+          ...a,
+          result: [
+            [a.result[0][1], a.result[0][0]],
+            [a.result[1][1], a.result[1][0]],
           ],
-          after: r.after.map(a => ({
-            ...a,
-            result: [
-              [a.result[0][1], a.result[0][0]],
-              [a.result[1][1], a.result[1][0]],
-            ],
-          })),
-        },
-        indices,
-      )
+        })),
+      })
     );
   }
   let probSum = 0;
   return `
-  if (${createBeforeCondition(r.before, indices)}) {
+  if (${createBeforeCondition(r.before)}) {
       ${r.after
         .map((a, i) => {
-          const body = `${createAfterResult(a.result, indices)} return;`;
+          const body = `${createAfterResult(a.result)} return;`;
           if (a.probability != null) {
             probSum += a.probability;
           }
@@ -119,18 +113,16 @@ function createRule(r: Rule, indices: Map<string, number>): string {
 `;
 }
 
-function createBeforeCondition(before: Block, indices: Map<string, number>) {
+function createBeforeCondition(before: Block) {
   return before
     .flatMap((row, dy) =>
-      row.map((s, dx) => {
-        if (s === '*') {
+      row.map((q, dx) => {
+        if (q.all) {
           return null;
-        } else if (s.startsWith('^')) {
-          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) != ${indices.get(
-            s.substring(1),
-          )}`;
+        } else if (q.negate) {
+          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) != ${q.id}`;
         } else {
-          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) == ${indices.get(s)}`;
+          return `at(ul.x + ${dx}.0, ul.y + ${dy}.0) == ${q.id}`;
         }
       }),
     )
@@ -138,15 +130,15 @@ function createBeforeCondition(before: Block, indices: Map<string, number>) {
     .join(' && ');
 }
 
-function createAfterResult(result: Block, indices: Map<string, number>) {
+function createAfterResult(result: Block) {
   return result
     .flatMap((row, dy) =>
-      row.map((s, dx) =>
-        s === '*'
+      row.map((q, dx) =>
+        q.all
           ? ''
           : `
             if (x == ul.x + ${dx}.0 && y == ul.y + ${dy}.0) {
-              gl_FragColor = encode(${indices.get(s)});
+              gl_FragColor = encode(${q.id});
             }
             `,
       ),

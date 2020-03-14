@@ -5,7 +5,6 @@ import { installShaders, run } from './webgl';
 import { Automaton } from './types';
 
 export function Preview({ automaton }: { automaton: Automaton }) {
-  const indices = new Map(automaton.states.map((s, i) => [s.name, i] as const));
   const canvas = useRef<HTMLCanvasElement>(null);
   const mouse = { x: -1, y: -1, clicked: false };
   const [dimensions, setDimensions] = useState([
@@ -48,7 +47,7 @@ export function Preview({ automaton }: { automaton: Automaton }) {
       gl,
       renderSrc,
       //readFileSync(__dirname + '/compute.glsl', 'utf-8'),
-      computeShader(automaton, indices),
+      computeShader(automaton),
       dimensions[0],
       dimensions[1],
     );

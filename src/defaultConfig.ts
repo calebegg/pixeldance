@@ -2,24 +2,24 @@ import { Automaton } from './types';
 
 export const DEFAULT_CONFIG: Automaton = {
   states: [
-    { name: 'air', color: '#14CAEB' },
-    { name: 'sand', color: '#ffd415' },
-    { name: 'wall', color: '#000000' },
-    { name: 'water', color: '#1057A3' },
-    { name: 'dune-buggy-right', color: '#FD0496' },
-    { name: 'dune-buggy-left', color: '#FD0496' },
+    { name: 'xair', color: '#14CAEB', id: 0 },
+    { name: 'xsand', color: '#ffd415', id: 1 },
+    { name: 'xwall', color: '#000000', id: 2 },
+    { name: 'xwater', color: '#1057A3', id: 3 },
+    { name: 'xdune-buggy-right', color: '#FD0496', id: 4 },
+    { name: 'xdune-buggy-left', color: '#FD0496', id: 5 },
   ],
   rules: [
     {
       before: [
-        ['sand', '*'],
-        ['air', '*'],
+        [{ id: 1 }, { all: true }],
+        [{ id: 0 }, { all: true }],
       ],
       after: [
         {
           result: [
-            ['air', '*'],
-            ['sand', '*'],
+            [{ id: 0 }, { all: true }],
+            [{ id: 1 }, { all: true }],
           ],
         },
       ],
@@ -27,14 +27,14 @@ export const DEFAULT_CONFIG: Automaton = {
     },
     {
       before: [
-        ['sand', 'air'],
-        ['sand', 'air'],
+        [{ id: 1 }, { id: 0 }],
+        [{ id: 1 }, { id: 0 }],
       ],
       after: [
         {
           result: [
-            ['air', 'air'],
-            ['sand', 'sand'],
+            [{ id: 0 }, { id: 0 }],
+            [{ id: 1 }, { id: 1 }],
           ],
         },
       ],
@@ -42,14 +42,14 @@ export const DEFAULT_CONFIG: Automaton = {
     },
     {
       before: [
-        ['water', '*'],
-        ['air', '*'],
+        [{ id: 3 }, { all: true }],
+        [{ id: 0 }, { all: true }],
       ],
       after: [
         {
           result: [
-            ['air', '*'],
-            ['water', '*'],
+            [{ id: 0 }, { all: true }],
+            [{ id: 3 }, { all: true }],
           ],
         },
       ],
@@ -57,43 +57,43 @@ export const DEFAULT_CONFIG: Automaton = {
     },
     {
       before: [
-        ['water', 'air'],
-        ['water', 'air'],
+        [{ id: 3 }, { id: 0 }],
+        [{ id: 3 }, { id: 0 }],
       ],
       after: [
         {
           result: [
-            ['air', 'air'],
-            ['water', 'water'],
+            [{ id: 0 }, { id: 0 }],
+            [{ id: 3 }, { id: 3 }],
           ],
         },
       ],
     },
     {
       before: [
-        ['air', 'water'],
-        ['air', 'water'],
+        [{ id: 0 }, { id: 3 }],
+        [{ id: 0 }, { id: 3 }],
       ],
       after: [
         {
           result: [
-            ['air', 'air'],
-            ['water', 'water'],
+            [{ id: 0 }, { id: 0 }],
+            [{ id: 3 }, { id: 3 }],
           ],
         },
       ],
     },
     {
       before: [
-        ['air', 'water'],
-        ['*', '^air'],
+        [{ id: 0 }, { id: 3 }],
+        [{ all: true }, { id: 0, negate: true }],
       ],
       after: [
         {
           probability: 0.75,
           result: [
-            ['water', 'air'],
-            ['*', '*'],
+            [{ id: 3 }, { id: 0 }],
+            [{ all: true }, { all: true }],
           ],
         },
       ],
@@ -101,14 +101,14 @@ export const DEFAULT_CONFIG: Automaton = {
     },
     {
       before: [
-        ['dune-buggy-right', '*'],
-        ['air', '*'],
+        [{ id: 4 }, { all: true }],
+        [{ id: 0 }, { all: true }],
       ],
       after: [
         {
           result: [
-            ['air', '*'],
-            ['dune-buggy-right', '*'],
+            [{ id: 0 }, { all: true }],
+            [{ id: 4 }, { all: true }],
           ],
         },
       ],
@@ -116,70 +116,73 @@ export const DEFAULT_CONFIG: Automaton = {
     },
     {
       before: [
-        ['dune-buggy-right', 'air'],
-        ['^air', '^air'],
+        [{ id: 4 }, { id: 0 }],
+        [
+          { id: 0, negate: true },
+          { id: 0, negate: true },
+        ],
       ],
       after: [
         {
           result: [
-            ['air', 'dune-buggy-right'],
-            ['*', '*'],
+            [{ id: 0 }, { id: 4 }],
+            [{ all: true }, { all: true }],
           ],
         },
       ],
     },
     {
       before: [
-        ['dune-buggy-right', 'air'],
-        ['^air', 'air'],
+        [{ id: 4 }, { id: 0 }],
+        [{ id: 0, negate: true }, { id: 0 }],
       ],
       after: [
         {
           result: [
-            ['air', 'air'],
-            ['*', 'dune-buggy-right'],
+            [{ id: 0 }, { id: 0 }],
+            [{ all: true }, { id: 4 }],
           ],
         },
       ],
     },
     {
       before: [
-        ['air', 'air'],
-        ['dune-buggy-right', '^air'],
+        [{ id: 0 }, { id: 0 }],
+        [{ id: 4 }, { id: 0, negate: true }],
       ],
       after: [
         {
           result: [
-            ['air', 'dune-buggy-right'],
-            ['air', '*'],
+            [{ id: 0 }, { id: 4 }],
+            [{ id: 0 }, { all: true }],
           ],
         },
       ],
     },
     {
       before: [
-        ['*', '^air'],
-        ['dune-buggy-right', '^air'],
+        [{ all: true }, { id: 0, negate: true }],
+        [{ id: 4 }, { id: 0, negate: true }],
       ],
       after: [
         {
           result: [
-            ['*', '*'],
-            ['dune-buggy-left', '*'],
+            [{ all: true }, { all: true }],
+            [{ id: 5 }, { all: true }],
           ],
         },
       ],
     },
     {
       before: [
-        ['dune-buggy-left', '*'],
-        ['air', '*'],
+        [{ id: 5 }, { all: true }],
+        [{ id: 0 }, { all: true }],
       ],
       after: [
         {
           result: [
-            ['air', '*'],
-            ['dune-buggy-left', '*'],
+            [{ id: 0 }, { all: true }],
+            [{ id: 5 }, { all: true }],
           ],
         },
       ],
@@ -187,56 +190,59 @@ export const DEFAULT_CONFIG: Automaton = {
     },
     {
       before: [
-        ['air', 'dune-buggy-left'],
-        ['^air', '^air'],
+        [{ id: 0 }, { id: 5 }],
+        [
+          { id: 0, negate: true },
+          { id: 0, negate: true },
+        ],
       ],
       after: [
         {
           result: [
-            ['dune-buggy-left', 'air'],
-            ['*', '*'],
+            [{ id: 5 }, { id: 0 }],
+            [{ all: true }, { all: true }],
           ],
         },
       ],
     },
     {
       before: [
-        ['air', 'dune-buggy-left'],
-        ['air', '^air'],
+        [{ id: 0 }, { id: 5 }],
+        [{ id: 0 }, { id: 0, negate: true }],
       ],
       after: [
         {
           result: [
-            ['air', 'air'],
-            ['dune-buggy-left', '*'],
+            [{ id: 0 }, { id: 0 }],
+            [{ id: 5 }, { all: true }],
           ],
         },
       ],
     },
     {
       before: [
-        ['air', 'air'],
-        ['^air', 'dune-buggy-left'],
+        [{ id: 0 }, { id: 0 }],
+        [{ id: 0, negate: true }, { id: 5 }],
       ],
       after: [
         {
           result: [
-            ['dune-buggy-left', 'air'],
-            ['*', 'air'],
+            [{ id: 5 }, { id: 0 }],
+            [{ all: true }, { id: 0 }],
           ],
         },
       ],
     },
     {
       before: [
-        ['^air', '*'],
-        ['^air', 'dune-buggy-left'],
+        [{ id: 0, negate: true }, { all: true }],
+        [{ id: 0, negate: true }, { id: 5 }],
       ],
       after: [
         {
           result: [
-            ['*', '*'],
-            ['*', 'dune-buggy-right'],
+            [{ all: true }, { all: true }],
+            [{ all: true }, { id: 4 }],
           ],
         },
       ],
