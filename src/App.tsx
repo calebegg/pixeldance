@@ -23,7 +23,7 @@ export function App() {
     <>
       <h1>Hello, world!</h1>
       <Editor automaton={automaton} dispatch={dispatch} />
-      <Preview />
+      <Preview automaton={automaton} />
     </>
   );
 }

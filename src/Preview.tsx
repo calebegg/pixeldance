@@ -4,12 +4,11 @@ import { computeShader } from './compute';
 const W = window.innerWidth;
 const H = window.innerHeight;
 
-import { DEFAULT_CONFIG as CONFIG } from './defaultConfig';
 import { installShaders, run } from './webgl';
+import { Automaton } from './types';
 
-const INDICES = new Map(CONFIG.states.map((s, i) => [s.name, i] as const));
-
-export function Preview() {
+export function Preview({ automaton }: { automaton: Automaton }) {
+  const indices = new Map(automaton.states.map((s, i) => [s.name, i] as const));
   const canvas = useRef<HTMLCanvasElement>(null);
   const mouse = { x: -1, y: -1, clicked: false };
   useEffect(() => {
@@ -21,7 +20,7 @@ export function Preview() {
     
     void main() {
       float val = texture2D(DATA, (gl_FragCoord.xy / RESOLUTION.xy)).r;
-      ${CONFIG.states
+      ${automaton.states
         .map(
           (s, i) => `
       ${i === 0 ? '' : 'else '}if (val == ${i}.0)
@@ -37,7 +36,7 @@ export function Preview() {
       gl,
       renderSrc,
       //readFileSync(__dirname + '/compute.glsl', 'utf-8'),
-      computeShader(CONFIG, INDICES),
+      computeShader(automaton, indices),
       W,
       H,
     );
