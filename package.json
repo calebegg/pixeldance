@@ -5,8 +5,8 @@
   "main": "dist/index.html",
   "scripts": {
     "serve": "parcel serve src/index.html",
-    "build": "parcel build src/index.html",
-    "deploy:hosting": "firebase deploy --only hosting"
+    "build": "rm -r .parcel-cache; parcel build src/index.html",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting"
   },
   "author": "",
   "license": "ISC",
