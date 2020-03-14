@@ -2,12 +2,12 @@ import { Automaton } from './types';
 
 export const DEFAULT_CONFIG: Automaton = {
   states: [
-    { name: 'xair', color: '#14CAEB', id: 0 },
-    { name: 'xsand', color: '#ffd415', id: 1 },
-    { name: 'xwall', color: '#000000', id: 2 },
-    { name: 'xwater', color: '#1057A3', id: 3 },
-    { name: 'xdune-buggy-right', color: '#FD0496', id: 4 },
-    { name: 'xdune-buggy-left', color: '#FD0496', id: 5 },
+    { name: 'air', color: '#14CAEB', id: 0 },
+    { name: 'sand', color: '#ffd415', id: 1 },
+    { name: 'wall', color: '#000000', id: 2 },
+    { name: 'water', color: '#1057A3', id: 3 },
+    { name: 'dune-buggy-right', color: '#FD0496', id: 4 },
+    { name: 'dune-buggy-left', color: '#FD0496', id: 5 },
   ],
   rules: [
     {
