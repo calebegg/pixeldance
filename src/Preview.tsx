@@ -24,12 +24,13 @@ export function Preview({ automaton }: { automaton: Automaton }) {
         .map(
           (s, i) => `
       ${i === 0 ? '' : 'else '}if (val == ${i}.0)
-        gl_FragColor = vec4(${s.color}, 1.0);`,
+        gl_FragColor = vec4(${hexToVec(s.color)}, 1.0);`,
         )
         .join('')}
       else
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }`;
+    console.log(renderSrc);
     const gl = canvas.current.getContext('webgl')!;
 
     installShaders(
@@ -57,4 +58,10 @@ export function Preview({ automaton }: { automaton: Automaton }) {
       ref={canvas}
     ></canvas>
   );
+}
+
+function hexToVec(hex: string) {
+  return `${(parseInt(hex.substring(1, 3), 16) / 256).toFixed(3)},
+          ${(parseInt(hex.substring(3, 5), 16) / 256).toFixed(3)},
+          ${(parseInt(hex.substring(5), 16) / 256).toFixed(3)}`;
 }

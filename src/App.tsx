@@ -13,6 +13,9 @@ const update = produce((draft: Draft<Automaton>, action: Action) => {
     case 'EDIT_STATE_NAME':
       draft.states[action.id].name = action.name;
       break;
+    case 'EDIT_STATE_COLOR':
+      draft.states[action.id].color = action.color;
+      break;
   }
 });
 

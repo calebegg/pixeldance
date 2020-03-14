@@ -34,6 +34,13 @@ export function StateEditor({ state, id, dispatch }: StateEditorProps) {
           dispatch({ type: 'EDIT_STATE_NAME', id, name: value });
         }}
       ></input>
+      <input
+        type="color"
+        value={state.color}
+        onChange={({ target: { value } }) => {
+          dispatch({ type: 'EDIT_STATE_COLOR', id, color: value });
+        }}
+      ></input>
     </div>
   );
 }
