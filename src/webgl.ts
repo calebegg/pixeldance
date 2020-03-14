@@ -106,8 +106,8 @@ export function installShaders(
   );
 
   // Set up computer
-  input = createBuffer(gl, width, height);
-  output = createBuffer(gl, width, height);
+  input = createBuffer(gl, width, height, 0);
+  output = createBuffer(gl, width, height, 2);
   gl.useProgram(computeProgram);
   gl.uniform2f(
     gl.getUniformLocation(computeProgram, 'RESOLUTION'),
@@ -148,8 +148,6 @@ function createProgram(gl: WebGLRenderingContext, shader: string) {
   return program;
 }
 
-let index = -2;
-
 interface BufferData {
   buffer: WebGLFramebuffer;
   texture: WebGLTexture;
@@ -160,8 +158,8 @@ function createBuffer(
   gl: WebGLRenderingContext,
   width: number,
   height: number,
+  index: 0 | 2,
 ): BufferData {
-  index += 2;
   const buffer = gl.createFramebuffer()!;
   gl.getExtension('OES_texture_float');
   const texture = gl.createTexture()!;

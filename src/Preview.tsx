@@ -1,8 +1,5 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { computeShader } from './compute';
-
-const W = window.innerWidth;
-const H = window.innerHeight;
 
 import { installShaders, run } from './webgl';
 import { Automaton } from './types';
@@ -11,6 +8,21 @@ export function Preview({ automaton }: { automaton: Automaton }) {
   const indices = new Map(automaton.states.map((s, i) => [s.name, i] as const));
   const canvas = useRef<HTMLCanvasElement>(null);
   const mouse = { x: -1, y: -1, clicked: false };
+  const [dimensions, setDimensions] = useState([
+    innerWidth,
+    innerHeight,
+  ] as const);
+
+  useEffect(() => {
+    const listner = (e: UIEvent) => {
+      setDimensions([innerWidth, innerHeight]);
+    };
+    addEventListener('resize', listner);
+    return () => {
+      removeEventListener('resize', listner);
+    };
+  });
+
   useEffect(() => {
     if (!canvas.current) return;
     const renderSrc = `precision mediump float;
@@ -30,7 +42,6 @@ export function Preview({ automaton }: { automaton: Automaton }) {
       else
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }`;
-    console.log(renderSrc);
     const gl = canvas.current.getContext('webgl')!;
 
     installShaders(
@@ -38,11 +49,11 @@ export function Preview({ automaton }: { automaton: Automaton }) {
       renderSrc,
       //readFileSync(__dirname + '/compute.glsl', 'utf-8'),
       computeShader(automaton, indices),
-      W,
-      H,
+      dimensions[0],
+      dimensions[1],
     );
     return run(gl, mouse);
-  }, []);
+  }, [automaton, dimensions]);
   return (
     <canvas
       onMouseDown={e => {
@@ -53,8 +64,8 @@ export function Preview({ automaton }: { automaton: Automaton }) {
       onMouseUp={() => {
         mouse.clicked = false;
       }}
-      width={W}
-      height={H}
+      width={dimensions[0]}
+      height={dimensions[1]}
       ref={canvas}
     ></canvas>
   );

@@ -24,7 +24,6 @@ export function App() {
 
   return (
     <>
-      <h1>Hello, world!</h1>
       <Editor automaton={automaton} dispatch={dispatch} />
       <Preview automaton={automaton} />
     </>
