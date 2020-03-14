@@ -9,6 +9,7 @@ export const DEFAULT_CONFIG: Automaton = {
     { name: 'dune-buggy-right', color: '#FD0496', id: 4 },
     { name: 'dune-buggy-left', color: '#FD0496', id: 5 },
     { name: 'steam', color: '#dfefff', id: 6 },
+    { name: 'acid', color: '#44ff00', id: 7 },
   ],
   rules: [
     {
@@ -291,6 +292,53 @@ export const DEFAULT_CONFIG: Automaton = {
           result: [
             [{ id: 0 }, { id: 6 }],
             [{ all: true }, { all: true }],
+          ],
+        },
+      ],
+      symmetries: { horizontal: true, vertical: true },
+    },
+    {
+      before: [
+        [{ id: 7 }, { all: true }],
+        [{ id: 0 }, { all: true }],
+      ],
+      after: [
+        {
+          result: [
+            [{ id: 0 }, { all: true }],
+            [{ id: 7 }, { all: true }],
+          ],
+        },
+      ],
+      symmetries: { horizontal: true },
+    },
+    {
+      before: [
+        [{ id: 7 }, { id: 2, negate: true }],
+        [{ all: true }, { all: true }],
+      ],
+      after: [
+        {
+          probability: 0.5,
+          result: [
+            [{ id: 7 }, { id: 0 }],
+            [{ all: true }, { all: true }],
+          ],
+        },
+      ],
+      symmetries: { horizontal: true },
+    },
+    {
+      before: [
+        [{ id: 7 }, { all: true }],
+        [{ id: 2, negate: true }, { all: true }],
+      ],
+      after: [
+        {
+          probability: 0.75,
+          result: [
+            [{ id: 7 }, { all: true }],
+            [{ id: 0 }, { all: true }],
           ],
         },
       ],

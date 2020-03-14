@@ -1,4 +1,4 @@
-const SCALE = 5;
+const SCALE = 10;
 
 const offsets = (function*() {
   while (true) {

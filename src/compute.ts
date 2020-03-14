@@ -32,7 +32,7 @@ void main() {
   gl_FragColor = encode(at(x, y));
 
   if (x == CLICK.x + 0.5 && y == CLICK.y + 0.5) {
-    gl_FragColor = encode(6);
+    gl_FragColor = encode(7);
     return;
   }
 
