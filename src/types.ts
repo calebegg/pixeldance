@@ -28,5 +28,8 @@ export type Rule = Immutable<{
     probability?: number;
     result: Block;
   }>;
-  symmetry?: 'horizontal';
+  symmetries?: {
+    horizontal?: boolean;
+    vertical?: boolean;
+  };
 }>;

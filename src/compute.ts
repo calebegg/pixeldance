@@ -32,7 +32,7 @@ void main() {
   gl_FragColor = encode(at(x, y));
 
   if (x == CLICK.x + 0.5 && y == CLICK.y + 0.5) {
-    gl_FragColor = encode(3);
+    gl_FragColor = encode(6);
     return;
   }
 
@@ -80,24 +80,45 @@ export function computeShader(automaton: Automaton) {
 }
 
 function createRule(r: Rule): string {
-  if (r.symmetry === 'horizontal') {
-    return (
-      createRule({ ...r, symmetry: undefined }) +
-      createRule({
-        before: [
-          [r.before[0][1], r.before[0][0]],
-          [r.before[1][1], r.before[1][0]],
-        ],
-        after: r.after.map(a => ({
-          ...a,
-          result: [
-            [a.result[0][1], a.result[0][0]],
-            [a.result[1][1], a.result[1][0]],
+  if (r.symmetries) {
+    const rules = [createRule({ ...r, symmetries: undefined })];
+    if (r.symmetries.horizontal) {
+      rules.push(
+        createRule({
+          before: [
+            [r.before[0][1], r.before[0][0]],
+            [r.before[1][1], r.before[1][0]],
           ],
-        })),
-      })
-    );
+          after: r.after.map(a => ({
+            ...a,
+            result: [
+              [a.result[0][1], a.result[0][0]],
+              [a.result[1][1], a.result[1][0]],
+            ],
+          })),
+        }),
+      );
+    }
+    if (r.symmetries.vertical) {
+      rules.push(
+        createRule({
+          before: [
+            [r.before[1][0], r.before[1][1]],
+            [r.before[0][0], r.before[0][1]],
+          ],
+          after: r.after.map(a => ({
+            ...a,
+            result: [
+              [a.result[1][0], a.result[1][1]],
+              [a.result[0][0], a.result[0][1]],
+            ],
+          })),
+        }),
+      );
+    }
+    return rules.join('\n');
   }
+
   let probSum = 0;
   return `
   if (${createBeforeCondition(r.before)}) {

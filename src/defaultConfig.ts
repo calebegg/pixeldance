@@ -8,6 +8,7 @@ export const DEFAULT_CONFIG: Automaton = {
     { name: 'water', color: '#1057A3', id: 3 },
     { name: 'dune-buggy-right', color: '#FD0496', id: 4 },
     { name: 'dune-buggy-left', color: '#FD0496', id: 5 },
+    { name: 'steam', color: '#dfefff', id: 6 },
   ],
   rules: [
     {
@@ -23,7 +24,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
-      symmetry: 'horizontal',
+      symmetries: { horizontal: true },
     },
     {
       before: [
@@ -38,7 +39,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
-      symmetry: 'horizontal',
+      symmetries: { horizontal: true },
     },
     {
       before: [
@@ -53,7 +54,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
-      symmetry: 'horizontal',
+      symmetries: { horizontal: true },
     },
     {
       before: [
@@ -97,7 +98,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
-      symmetry: 'horizontal',
+      symmetries: { horizontal: true },
     },
     {
       before: [
@@ -112,7 +113,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
-      symmetry: 'horizontal',
+      symmetries: { horizontal: true },
     },
     {
       before: [
@@ -186,7 +187,7 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
-      symmetry: 'horizontal',
+      symmetries: { horizontal: true },
     },
     {
       before: [
@@ -246,6 +247,54 @@ export const DEFAULT_CONFIG: Automaton = {
           ],
         },
       ],
+    },
+    {
+      before: [
+        [{ id: 0 }, { all: true }],
+        [{ id: 6 }, { all: true }],
+      ],
+      after: [
+        {
+          probability: 0.5,
+          result: [
+            [{ id: 6 }, { all: true }],
+            [{ id: 0 }, { all: true }],
+          ],
+        },
+      ],
+      symmetries: { horizontal: true },
+    },
+    {
+      before: [
+        [{ id: 6 }, { all: true }],
+        [{ id: 0 }, { all: true }],
+      ],
+      after: [
+        {
+          probability: 0.25,
+          result: [
+            [{ id: 0 }, { all: true }],
+            [{ id: 6 }, { all: true }],
+          ],
+        },
+      ],
+      symmetries: { horizontal: true },
+    },
+    {
+      before: [
+        [{ id: 6 }, { id: 0 }],
+        [{ all: true }, { all: true }],
+      ],
+      after: [
+        {
+          probability: 0.5,
+          result: [
+            [{ id: 0 }, { id: 6 }],
+            [{ all: true }, { all: true }],
+          ],
+        },
+      ],
+      symmetries: { horizontal: true, vertical: true },
     },
   ],
 };
