@@ -2,9 +2,11 @@
   "name": "pixel.dance",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "parcel serve src/index.html",
+    "build": "parcel build src/index.html",
+    "deploy:hosting": "firebase deploy --only hosting"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +15,8 @@
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
     "clang-format": "^1.4.0",
-    "parcel": "^2.0.0-alpha.3.2",
+    "firebase-tools": "^7.15.0",
+    "parcel": "^2.0.0-nightly.147",
     "typescript": "^3.8.3"
   },
   "dependencies": {
@@ -24,5 +27,8 @@
   "prettier": {
     "singleQuote": true,
     "trailingComma": "all"
-  }
+  },
+  "browserslist": [
+    "since 2018"
+  ]
 }
