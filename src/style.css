@@ -39,10 +39,11 @@ details[open] > summary::before {
 input[type='text'] {
   background: rgba(0, 0, 0, 0.25);
   border: none;
-  color: white;
+  color: inherit;
+  font: inherit;
   line-height: 24px;
   padding: 0 8px;
-  width: 100px;
+  width: 64px;
 }
 
 input[type='color'] {
@@ -59,4 +60,25 @@ input[type='color']::-webkit-color-swatch-wrapper {
 
 input[type='color']::-webkit-color-swatch {
   border: none;
+}
+
+.rule-editor {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.rule-editor select {
+  width: 64px;
+  color: inherit;
+  font: inherit;
+  background: rgba(0, 0, 0, 0.25);
+  border: none;
+  line-height: 24px;
+  -webkit-appearance: none;
+  text-shadow: 1px 1px 2px black;
+}
+
+.rule-editor select option {
+  background: rgba(0, 0, 0, 0.75);
 }
