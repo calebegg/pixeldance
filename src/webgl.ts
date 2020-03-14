@@ -88,6 +88,8 @@ export function installShaders(
   renderProgram = createProgram(gl, renderShader);
   computeProgram = createProgram(gl, computeShader);
 
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
   // Set up renderer
   gl.useProgram(renderProgram);
   const verticesLoc = gl.getAttribLocation(renderProgram, 'position');
