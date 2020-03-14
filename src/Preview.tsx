@@ -1,12 +1,22 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { computeShader } from './compute';
 
-import { installShaders, run } from './webgl';
+import { installShaders, run, setStatefulData } from './webgl';
 import { Automaton } from './types';
 
-export function Preview({ automaton }: { automaton: Automaton }) {
+export function Preview({
+  automaton,
+  clickState,
+}: {
+  automaton: Automaton;
+  clickState: number;
+}) {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const mouse = { x: -1, y: -1, clicked: false };
+  const [mousePosition, setMousePosition] = useState([-1, -1] as [
+    number,
+    number,
+  ]);
+  const [mouseDown, setMouseDown] = useState(false);
   const [dimensions, setDimensions] = useState([
     innerWidth,
     innerHeight,
@@ -51,24 +61,26 @@ export function Preview({ automaton }: { automaton: Automaton }) {
       dimensions[0],
       dimensions[1],
     );
-    return run(gl, mouse);
+    return run(gl);
   }, [automaton, dimensions]);
+
+  useEffect(() => {
+    setStatefulData(mousePosition, mouseDown, clickState);
+  }, [mousePosition, mouseDown, clickState]);
   return (
     <canvas
       onMouseDown={e => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-        mouse.clicked = true;
+        setMousePosition([e.clientX, e.clientY]);
+        setMouseDown(true);
       }}
       onMouseUp={() => {
-        mouse.clicked = false;
+        setMouseDown(false);
       }}
       onMouseMove={e => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
+        setMousePosition([e.clientX, e.clientY]);
       }}
       onMouseLeave={() => {
-        mouse.clicked = false;
+        setMouseDown(false);
       }}
       width={dimensions[0]}
       height={dimensions[1]}

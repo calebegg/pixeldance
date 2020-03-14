@@ -11,8 +11,12 @@ main {
 }
 
 details {
-  background: rgba(0, 0, 0, 0.5);
   padding: 8px;
+}
+
+details,
+.palette {
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   font-family: monospace;
   width: fit-content;
@@ -86,4 +90,21 @@ input[type='color']::-webkit-color-swatch {
 
 .rule-editor select option {
   background: rgba(0, 0, 0, 0.75);
+}
+
+.palette {
+  display: flex;
+}
+
+.palette input {
+  display: none;
+}
+
+.palette input + div {
+  text-shadow: 1px 1px 2px black;
+  padding: 8px;
+}
+
+.palette input:checked + div {
+  box-shadow: 0 0 0 3px red inset;
 }

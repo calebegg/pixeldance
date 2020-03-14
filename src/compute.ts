@@ -7,6 +7,7 @@ uniform vec2 RESOLUTION;
 uniform sampler2D DATA;
 uniform vec2 OFFSET;
 uniform vec2 CLICK;
+uniform int CLICK_STATE;
 uniform float FRAME;
 
 // Modified from http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
@@ -32,7 +33,7 @@ void main() {
   gl_FragColor = encode(at(x, y));
 
   if (x == CLICK.x + 0.5 && y == CLICK.y + 0.5) {
-    gl_FragColor = encode(7);
+    gl_FragColor = encode(CLICK_STATE);
     return;
   }
 

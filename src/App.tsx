@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useState } from 'react';
 import { Editor } from './Editor';
 import { Preview } from './Preview';
 
@@ -7,6 +7,7 @@ import { DEFAULT_CONFIG } from './defaultConfig';
 import { Automaton } from './types';
 import { Action } from './action';
 import produce, { Draft } from 'immer';
+import { Palette } from './Palette';
 
 const update = produce((draft: Draft<Automaton>, action: Action) => {
   switch (action.type) {
@@ -21,11 +22,21 @@ const update = produce((draft: Draft<Automaton>, action: Action) => {
 
 export function App() {
   let [automaton, dispatch] = useReducer(update, DEFAULT_CONFIG);
+  let [clickState, setClickState] = useState(1);
 
   return (
     <>
-      <Editor automaton={automaton} dispatch={dispatch} />
-      <Preview automaton={automaton} />
+      <div style={{ display: 'flex' }}>
+        <Editor automaton={automaton} dispatch={dispatch} />
+        <Palette
+          states={automaton.states}
+          value={clickState}
+          onChange={v => {
+            setClickState(v);
+          }}
+        />
+      </div>
+      <Preview automaton={automaton} clickState={clickState} />
     </>
   );
 }

@@ -15,20 +15,24 @@ let renderProgram: WebGLProgram;
 let input: BufferData;
 let output: BufferData;
 
-export interface MouseData {
-  x: number;
-  y: number;
-  clicked: boolean;
+let mousePosition = [-1, -1];
+let mouseDown = false;
+let clickState = 0;
+
+export function setStatefulData(mP: [number, number], mD: boolean, cS: number) {
+  mousePosition = mP;
+  mouseDown = mD;
+  clickState = cS;
 }
 
 /** Start the animation, updating the cell states and rendering every frame. */
-export function run(gl: WebGLRenderingContext, mouse: MouseData) {
+export function run(gl: WebGLRenderingContext) {
   let timerId = -1;
   let frame = 0;
 
   function renderAndContinue() {
     frame++;
-    if (frame % 2 == 0) update(gl, frame / 2, mouse);
+    if (frame % 2 == 0) update(gl, frame / 2);
     else render(gl);
     timerId = requestAnimationFrame(renderAndContinue);
   }
@@ -41,7 +45,7 @@ export function run(gl: WebGLRenderingContext, mouse: MouseData) {
 }
 
 /** Run the compute shader to update the state of each cell. */
-function update(gl: WebGLRenderingContext, frame: number, mouse: MouseData) {
+function update(gl: WebGLRenderingContext, frame: number) {
   // Compute next step
   gl.useProgram(computeProgram);
   gl.bindFramebuffer(gl.FRAMEBUFFER, output.buffer);
@@ -53,9 +57,16 @@ function update(gl: WebGLRenderingContext, frame: number, mouse: MouseData) {
   );
   gl.uniform2fv(
     gl.getUniformLocation(computeProgram, 'CLICK'),
-    mouse.clicked
-      ? [Math.floor(mouse.x / SCALE), Math.floor(mouse.y / SCALE)]
+    mouseDown
+      ? [
+          Math.floor(mousePosition[0] / SCALE),
+          Math.floor(mousePosition[1] / SCALE),
+        ]
       : [-1, -1],
+  );
+  gl.uniform1i(
+    gl.getUniformLocation(computeProgram, 'CLICK_STATE'),
+    clickState,
   );
   gl.framebufferTexture2D(
     gl.FRAMEBUFFER,
