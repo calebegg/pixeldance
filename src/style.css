@@ -4,3 +4,25 @@ canvas {
   left: 0;
   z-index: -1000;
 }
+
+details.root > summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  color: white;
+  font-family: monospace;
+}
+
+details.root > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.root > summary::before {
+  content: '[+]';
+}
+
+details.root[open] > summary::before {
+  content: '[-] ';
+}

@@ -10,11 +10,15 @@ interface EditorProps {
 
 export function Editor({ automaton: { states }, dispatch }: EditorProps) {
   return (
-    <div>
-      {states.map((state, i) => (
-        <StateEditor key={i} id={i} state={state} dispatch={dispatch} />
-      ))}
-    </div>
+    <details className="root">
+      <summary></summary>
+      <details open>
+        <summary>States</summary>
+        {states.map((state, i) => (
+          <StateEditor key={i} id={i} state={state} dispatch={dispatch} />
+        ))}
+      </details>
+    </details>
   );
 }
 
