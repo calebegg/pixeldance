@@ -4,7 +4,7 @@ import { Preview } from './Preview';
 
 import { DEFAULT_CONFIG } from './defaultConfig';
 
-import { Automaton } from './types';
+import { Automaton, Rule } from './types';
 import { Action } from './action';
 import produce, { Draft } from 'immer';
 import { Palette } from './Palette';
@@ -17,6 +17,16 @@ const update = produce((draft: Draft<Automaton>, action: Action) => {
     case 'EDIT_STATE_COLOR':
       draft.states[action.id].color = action.color;
       break;
+    case 'EDIT_RULE_BEFORE':
+      draft.rules[action.ruleIndex].before[action.beforeIndex[0]][
+        action.beforeIndex[1]
+      ] = action.query;
+      break;
+    case 'EDIT_RULE_AFTER_RESULT':
+      draft.rules[action.ruleIndex].after[action.afterIndex].result[
+        action.resultIndex[0]
+      ][action.resultIndex[1]] = action.query;
+      break;
   }
 });
 
@@ -26,16 +36,14 @@ export function App() {
 
   return (
     <>
-      <div style={{ display: 'flex' }}>
-        <Editor automaton={automaton} dispatch={dispatch} />
-        <Palette
-          states={automaton.states}
-          value={clickState}
-          onChange={v => {
-            setClickState(v);
-          }}
-        />
-      </div>
+      <Editor automaton={automaton} dispatch={dispatch} />
+      <Palette
+        states={automaton.states}
+        value={clickState}
+        onChange={v => {
+          setClickState(v);
+        }}
+      />
       <Preview automaton={automaton} clickState={clickState} />
     </>
   );

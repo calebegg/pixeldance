@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Automaton, State, Rule, Query } from './types';
+import { Automaton, State, Rule, Query, Block } from './types';
 import { Action } from './action';
 
 interface EditorProps {
@@ -23,7 +23,7 @@ export function Editor({
       {rules.map((rule, i) => (
         <RuleEditor
           key={i}
-          id={i}
+          index={i}
           rule={rule}
           states={states}
           dispatch={dispatch}
@@ -63,50 +63,64 @@ export function StateEditor({ state, id, dispatch }: StateEditorProps) {
 interface RuleEditorProps {
   rule: Rule;
   states: readonly State[];
-  id: number;
+  index: number;
   dispatch: React.Dispatch<Action>;
 }
 
-export function RuleEditor({ rule, states, id, dispatch }: RuleEditorProps) {
+export function RuleEditor({ rule, states, index, dispatch }: RuleEditorProps) {
   return (
     <div className="rule-editor">
       <div className="before">
-        <div className="row">
-          <StateSelect states={states} value={rule.before[0][0]} />
-          <StateSelect states={states} value={rule.before[0][1]} />
-        </div>
-        <div className="row">
-          <StateSelect states={states} value={rule.before[1][0]} />
-          <StateSelect states={states} value={rule.before[1][1]} />
-        </div>
+        <BlockEditor
+          states={states}
+          value={rule.before}
+          onChange={({ offset, query }) =>
+            dispatch({
+              type: 'EDIT_RULE_BEFORE',
+              ruleIndex: index,
+              beforeIndex: offset,
+              query,
+            })
+          }
+        />
       </div>
       <div>=></div>
       {rule.after.map((a, i) => (
         <div key={i} className="after">
-          <div className="row">
-            <StateSelect states={states} value={a.result[0][0]} />
-            <StateSelect states={states} value={a.result[0][1]} />
-          </div>
-          <div className="row">
-            <StateSelect states={states} value={a.result[1][0]} />
-            <StateSelect states={states} value={a.result[1][1]} />
-          </div>
+          <BlockEditor
+            states={states}
+            value={a.result}
+            onChange={({ offset, query }) =>
+              dispatch({
+                type: 'EDIT_RULE_AFTER_RESULT',
+                ruleIndex: index,
+                afterIndex: i,
+                resultIndex: offset,
+                query,
+              })
+            }
+          />
         </div>
       ))}
     </div>
   );
 }
 
-interface StateSelectProps {
+export function StateSelect({
+  states,
+  value,
+  onChange,
+}: {
   states: readonly State[];
   value: Query;
-  onChange?: (value: number) => void;
-}
-
-export function StateSelect({ states, value, onChange }: StateSelectProps) {
+  onChange: (value: Query) => void;
+}) {
   return (
     <select
       value={JSON.stringify(value)}
+      onChange={({ target: { value } }) => {
+        onChange(JSON.parse(value));
+      }}
       style={{ backgroundColor: states.find(s => s.id === value.id)?.color }}
     >
       <option value="{all: true}">*</option>
@@ -121,5 +135,52 @@ export function StateSelect({ states, value, onChange }: StateSelectProps) {
         </option>
       ))}
     </select>
+  );
+}
+
+function BlockEditor({
+  states,
+  value,
+  onChange,
+}: {
+  states: readonly State[];
+  value: Block;
+  onChange: (value: { query: Query; offset: [0 | 1, 0 | 1] }) => void;
+}) {
+  return (
+    <>
+      <div className="row">
+        <StateSelect
+          states={states}
+          value={value[0][0]}
+          onChange={query => {
+            onChange({ query, offset: [0, 0] });
+          }}
+        />
+        <StateSelect
+          states={states}
+          value={value[0][1]}
+          onChange={query => {
+            onChange({ query, offset: [0, 1] });
+          }}
+        />
+      </div>
+      <div className="row">
+        <StateSelect
+          states={states}
+          value={value[1][0]}
+          onChange={query => {
+            onChange({ query, offset: [1, 0] });
+          }}
+        />
+        <StateSelect
+          states={states}
+          value={value[1][1]}
+          onChange={query => {
+            onChange({ query, offset: [1, 1] });
+          }}
+        />
+      </div>
+    </>
   );
 }
