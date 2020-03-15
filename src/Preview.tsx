@@ -82,6 +82,19 @@ export function Preview({
       onMouseLeave={() => {
         setMouseDown(false);
       }}
+      onTouchStart={e => {
+        setMousePosition([e.touches[0].clientX, e.touches[0].clientY]);
+        setMouseDown(true);
+      }}
+      onTouchEnd={() => {
+        setMouseDown(false);
+      }}
+      onTouchCancel={() => {
+        setMouseDown(false);
+      }}
+      onTouchMove={e => {
+        setMousePosition([e.touches[0].clientX, e.touches[0].clientY]);
+      }}
       width={dimensions[0]}
       height={dimensions[1]}
       ref={canvas}
