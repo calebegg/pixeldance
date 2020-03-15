@@ -16,9 +16,21 @@ export function Editor({
     <details>
       <summary></summary>
       <h2>States</h2>
-      {states.map((state, i) => (
-        <StateEditor key={i} id={i} state={state} dispatch={dispatch} />
+      {states.map(state => (
+        <StateEditor
+          key={state.id}
+          id={state.id}
+          state={state}
+          dispatch={dispatch}
+        />
       ))}
+      <button
+        onClick={() => {
+          dispatch({ type: 'ADD_STATE' });
+        }}
+      >
+        [+] New state
+      </button>
       <h2>Rules</h2>
       {rules.map((rule, i) => (
         <RuleEditor
@@ -29,6 +41,13 @@ export function Editor({
           dispatch={dispatch}
         />
       ))}
+      <button
+        onClick={() => {
+          dispatch({ type: 'ADD_RULE' });
+        }}
+      >
+        [+] New rule
+      </button>
     </details>
   );
 }
@@ -56,6 +75,7 @@ export function StateEditor({ state, id, dispatch }: StateEditorProps) {
           dispatch({ type: 'EDIT_STATE_COLOR', id, color: value });
         }}
       ></input>
+      id: {id}
     </div>
   );
 }

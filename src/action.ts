@@ -20,6 +20,9 @@ export type Action =
       color: string;
     }
   | {
+      type: 'ADD_RULE';
+    }
+  | {
       type: 'EDIT_RULE_BEFORE';
       ruleIndex: number;
       beforeIndex: [0 | 1, 0 | 1];
