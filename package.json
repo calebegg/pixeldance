@@ -11,18 +11,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^13.9.0",
-    "@types/react": "^16.9.23",
-    "@types/react-dom": "^16.9.5",
+    "@types/node": "^13.11.1",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
     "clang-format": "^1.4.0",
     "firebase-tools": "^7.15.0",
-    "parcel": "^2.0.0-nightly.147",
+    "parcel": "^2.0.0-nightly.223",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "immer": "^6.0.1",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0"
+    "immer": "^6.0.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "prettier": {
     "singleQuote": true,
