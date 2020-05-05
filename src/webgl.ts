@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const SCALE = 10;
+const SCALE = 5;
 
 const offsets = (function*() {
   while (true) {
@@ -76,8 +76,8 @@ function update(gl: WebGLRenderingContext, frame: number) {
     gl.getUniformLocation(computeProgram, 'CLICK'),
     mouseDown
       ? [
-          Math.floor(mousePosition[0] / SCALE),
-          Math.floor(mousePosition[1] / SCALE),
+          Math.floor(mousePosition[0] / SCALE - 0.5),
+          Math.floor(mousePosition[1] / SCALE - 0.5),
         ]
       : [-1, -1],
   );

@@ -73,7 +73,6 @@ export function Preview({
     installShaders(
       gl,
       renderSrc,
-      //readFileSync(__dirname + '/compute.glsl', 'utf-8'),
       computeShader(automaton),
       dimensions[0],
       dimensions[1],
