@@ -17,7 +17,7 @@
 
 const SCALE = 5;
 
-const offsets = (function*() {
+const offsets = (function* () {
   while (true) {
     yield [0, 0];
     yield [0, 1];
