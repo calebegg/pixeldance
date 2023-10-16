@@ -71,19 +71,6 @@ void main() {
     gl_FragColor = encode(5);
   }
 
-  // Intermediate walls
-  // if (y == 80.5 && mod(x + 3.0, 23.0) <= 20.5) {
-  //   gl_FragColor = encode(2);
-  // }
-
-  // if (y == 140.5 && mod(x + 19.0, 32.0) <= 23.5) {
-  //   gl_FragColor = encode(2);
-  // }
-
-  // if (y == 210.5 && mod(x + 7.0, 62.0) <= 53.5) {
-  //   gl_FragColor = encode(2);
-  // }
-
   vec2 ul;
   ul.x = x - mod(x + OFFSET.x, 2.0) + 0.5;
   ul.y = y - mod(y + OFFSET.y, 2.0) + 0.5;

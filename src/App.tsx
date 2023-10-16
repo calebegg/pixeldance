@@ -21,9 +21,9 @@ import { Preview } from './Preview';
 
 import { DEFAULT_CONFIG } from './defaultConfig';
 
-import { Automaton, Rule } from './types';
+import { Automaton } from './types';
 import { Action } from './action';
-import produce, { Draft } from 'immer';
+import { produce, Draft } from 'immer';
 import { Palette } from './Palette';
 
 const update = produce((draft: Draft<Automaton>, action: Action) => {

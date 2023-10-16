@@ -2,7 +2,6 @@
   "name": "pixel.dance",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index.html",
   "scripts": {
     "serve": "parcel serve src/index.html",
     "build": "rm -r .parcel-cache; parcel build src/index.html",
@@ -11,18 +10,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^14.6.0",
-    "@types/react": "^16.9.47",
-    "@types/react-dom": "^16.9.8",
-    "clang-format": "^1.4.0",
-    "firebase-tools": "^8.9.0",
-    "parcel": "^2.0.0-nightly.384",
-    "typescript": "^4.0.2"
+    "@types/node": "^20.8.6",
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "firebase-tools": "^12.7.0",
+    "parcel": "^2.10.0",
+    "process": "^0.11.10",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "immer": "^7.0.8",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "immer": "^10.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "prettier": {
     "singleQuote": true,
